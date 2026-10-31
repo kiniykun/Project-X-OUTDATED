@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: project-x
+    runtime: node
+    plan: free
+    buildCommand: bun install && bun run build
+    startCommand: bun server.ts
+    envVars:
+      - key: BUN_VERSION
+        value: 1.2.0

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>X</title>
+<link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script>
+  // Fast mode (saved in Settings) skips downloading the gothic text font; only the X keeps its own font.
+  (function () {
+    var fast = false;
+    try { fast = !!JSON.parse(localStorage.getItem("x_save_v1") || "{}").fast; } catch (e) {}
+    if (fast) document.documentElement.classList.add("fast");
+    var l = document.createElement("link");
+    l.rel = "stylesheet"; l.id = "fontlink";
+    l.href = "https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700" + (fast ? "" : "&family=Grenze+Gotisch:wght@400;600&family=Architects+Daughter") + "&display=swap";
+    document.head.appendChild(l);
+  })();
+</script>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="vignette" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div id="cursor" aria-hidden="true"><img alt=""></div>
+
+<!-- Loading screen -->
+<div id="loading" class="screen active">
+  <div class="title-wrap"><h1 class="blood-text">X</h1></div>
+  <div class="bottom">
+    <div class="status-row">
+      <span id="fileName">Starting...</span>
+      <span id="percent">0%</span>
+    </div>
+    <div class="track"><div id="bar"></div></div>
+    <div id="clickMsg">Click anywhere</div>
+  </div>
+</div>
+
+<!-- Home screen -->
+<div id="home" class="screen">
+  <div class="decor" aria-hidden="true"><div class="bigx">X</div><div class="fog a"></div><div class="fog b"></div><div class="floor"></div><div class="frame"></div><div id="embers"></div></div>
+  <img class="hero" alt="" src="images/enter-hero.webp">
+  <div class="logo" aria-hidden="true">X</div>
+  <div class="menu" id="menu">
+    <button class="sel">Enter</button>
+    <button>Settings</button>
+  </div>
+  <div class="hint">↑ ↓ to move &nbsp;·&nbsp; Enter to select</div>
+  <div class="version">Beta V1</div>
+</div>
+
+<!-- Profile select -->
+<div id="profiles" class="screen">
+  <div class="exe" id="hands" aria-hidden="true"><img alt="" src="images/enter-hands.webp"><i class="eye l"></i><i class="eye r"></i></div>
+  <div class="glow" aria-hidden="true"></div>
+  <div class="head">Select User</div>
+  <div class="row" id="row">
+    <div class="item add" data-id="add">
+      <div class="av plus"></div>
+      <div class="nm">Add User</div>
+    </div>
+    <div class="item cream gone" data-id="cream">
+      <div class="av"><div class="clip"><img alt="" src="images/profile-default.jpg"></div></div>
+      <div class="nm">Cream</div>
+    </div>
+  </div>
+  <div class="login">
+    <div class="who">Cream</div>
+    <div class="sub">Enter password</div>
+    <div class="field">
+      <input id="pw" type="password" placeholder="Password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
+      <button id="pwGo" type="button" aria-label="Enter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </div>
+    <div class="msg" id="pwMsg"></div>
+    <button class="lcz" id="lczBtn" type="button">Customize profile</button>
+  </div>
+  <div class="denied" id="denied">
+    <svg class="seal" viewBox="0 0 120 120" fill="none" stroke-linecap="square" aria-hidden="true"><path class="s1" d="M60 6L114 60L60 114L6 60Z"/><path class="s2" d="M42 42L78 78M78 42L42 78"/></svg>
+    <div class="big">Not yet.</div>
+    <div class="small">This door is still shut.</div>
+    <div class="back"><span class="touch">Tap</span><span class="desk">Click</span> anywhere to go back</div>
+  </div>
+  <button class="pback" id="pback" type="button">&lsaquo; Back</button>
+  <div class="create" id="create">
+    <div class="in">
+      <h2>New profile</h2>
+      <div class="sub">Pick a name, a colour and a password.</div>
+      <label for="cName">NAME</label>
+      <input class="box" id="cName" maxlength="12" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Name">
+      <label class="lc">COLOUR</label>
+      <div class="swatches" id="cColors"></div>
+      <label class="lp">PHOTO <span style="opacity:.6">(optional)</span></label>
+      <div class="photo-row">
+        <div class="pv" id="cPrev"><span id="cPrevL">?</span></div>
+        <button class="btn ghost" id="cUp" type="button">Upload photo</button>
+        <button class="rm" id="cRm" type="button" hidden>Remove</button>
+        <input type="file" id="cFile" accept="image/*" hidden>
+      </div>
+      <label for="cPw">PASSWORD</label>
+      <input class="box" id="cPw" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="At least 4 characters">
+      <div class="m" id="cMsg"></div>
+      <div class="btns"><button class="btn ghost" id="cCancel" type="button">Cancel</button><button class="btn main" id="cGo" type="button">Create</button></div>
+    </div>
+  </div>
+  <div class="hint"><span class="touch">Swipe to choose &nbsp;·&nbsp; Tap to enter</span><span class="desk">&larr; &rarr; to choose &nbsp;·&nbsp; Enter to select</span></div>
+</div>
+
+<!-- Settings -->
+<div id="settings" class="screen">
+  <div class="set-top">
+    <button class="set-back" id="setBack" type="button">&lsaquo; Back</button>
+    <div class="set-title">Settings</div>
+    <span class="set-sp"></span>
+  </div>
+  <div class="set-list">
+    <div class="set-group">Performance</div>
+    <button class="set-row" role="switch" data-key="fast" type="button">
+      <div class="txt"><div class="lbl">Fast mode</div><div class="dsc">For laggy Chromebooks and phones. Removes the custom fonts everywhere except the X.</div></div>
+      <span class="sw"></span>
+    </button>
+    <div class="set-group">Effects</div>
+    <button class="set-row" role="switch" data-key="grain" type="button">
+      <div class="txt"><div class="lbl">Film grain</div><div class="dsc">The flickering noise over the screen.</div></div>
+      <span class="sw"></span>
+    </button>
+    <button class="set-row" role="switch" data-key="crumble" type="button">
+      <div class="txt"><div class="lbl">Crumble effect</div><div class="dsc">Screens break into pieces when you move on. Turn off for instant changes.</div></div>
+      <span class="sw"></span>
+    </button>
+    <div class="reveal" id="curReveal" aria-hidden="true"><div class="in">
+      <div class="set-group">Cursors</div>
+      <button class="set-row" role="switch" data-key="curRotate" type="button">
+        <div class="txt"><div class="lbl">Rotate with movement</div><div class="dsc">The cursor turns to face the way you move it, in every direction.</div></div>
+        <span class="sw"></span>
+      </button>
+      <div class="set-row slider">
+        <div class="txt"><div class="lbl">Size</div></div>
+        <input type="range" id="curSize" min="24" max="96" step="2" aria-label="Cursor size">
+        <span class="val" id="curSizeV">44</span>
+      </div>
+      <div class="cur-head"><span>Your cursors</span><span id="curCount"></span></div>
+      <div class="cur-box" id="curBox"></div>
+      <div class="cur-msg" id="curMsg"></div>
+      <input type="file" id="curFile" accept="image/*" multiple hidden>
+    </div></div>
+    <div class="set-group">Progress</div>
+    <button class="set-row danger" id="resetBtn" type="button">
+      <div class="txt"><div class="lbl" id="resetLbl">Reset progress</div><div class="dsc">Removes your profiles, cursors and redeemed codes. Settings stay.</div></div>
+    </button>
+    <button class="set-row" id="codeBtn" type="button">
+      <div class="txt"><div class="lbl">Enter Code</div></div>
+      <span class="chev">&rsaquo;</span>
+    </button>
+  </div>
+  <div class="modal" id="codeModal">
+    <div class="card">
+      <h2>Enter Code</h2>
+      <input id="codeIn" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Code" enterkeyhint="go">
+      <div class="m" id="codeMsg"></div>
+      <div class="btns"><button class="btn ghost" id="codeCancel" type="button">Close</button><button class="btn main" id="codeGo" type="button">Redeem</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- After the password -->
+<div id="story">
+  <div class="say" id="say"><div class="ln" id="l1"></div><div class="ln" id="l2"></div></div>
+  <div class="eyes" id="eyes">
+    <div class="eye l" id="eyeL"><div class="orb"><svg viewBox="-50 -50 100 100" shape-rendering="crispEdges"><rect x="-14" y="-44" width="8" height="8" fill="#a80000"/><rect x="-4" y="-44" width="8" height="8" fill="#a80000"/><rect x="6" y="-44" width="8" height="8" fill="#a80000"/><rect x="-34" y="-34" width="8" height="8" fill="#a80000"/><rect x="-24" y="-34" width="8" height="8" fill="#a80000"/><rect x="-14" y="-34" width="8" height="8" fill="#a80000"/><rect x="-4" y="-34" width="8" height="8" fill="#e01616"/><rect x="6" y="-34" width="8" height="8" fill="#a80000"/><rect x="16" y="-34" width="8" height="8" fill="#a80000"/><rect x="26" y="-34" width="8" height="8" fill="#a80000"/><rect x="-34" y="-24" width="8" height="8" fill="#a80000"/><rect x="-24" y="-24" width="8" height="8" fill="#e01616"/><rect x="-14" y="-24" width="8" height="8" fill="#e01616"/><rect x="-4" y="-24" width="8" height="8" fill="#e01616"/><rect x="6" y="-24" width="8" height="8" fill="#e01616"/><rect x="16" y="-24" width="8" height="8" fill="#e01616"/><rect x="26" y="-24" width="8" height="8" fill="#a80000"/><rect x="-44" y="-14" width="8" height="8" fill="#a80000"/><rect x="-34" y="-14" width="8" height="8" fill="#a80000"/><rect x="-24" y="-14" width="8" height="8" fill="#e01616"/><rect x="-14" y="-14" width="8" height="8" fill="#ff4a4a"/><rect x="-4" y="-14" width="8" height="8" fill="#ff4a4a"/><rect x="6" y="-14" width="8" height="8" fill="#ff4a4a"/><rect x="16" y="-14" width="8" height="8" fill="#e01616"/><rect x="26" y="-14" width="8" height="8" fill="#a80000"/><rect x="36" y="-14" width="8" height="8" fill="#a80000"/><rect x="-44" y="-4" width="8" height="8" fill="#a80000"/><rect x="-34" y="-4" width="8" height="8" fill="#e01616"/><rect x="-24" y="-4" width="8" height="8" fill="#e01616"/><rect x="-14" y="-4" width="8" height="8" fill="#ff4a4a"/><rect x="-4" y="-4" width="8" height="8" fill="#ff4a4a"/><rect x="6" y="-4" width="8" height="8" fill="#ff4a4a"/><rect x="16" y="-4" width="8" height="8" fill="#e01616"/><rect x="26" y="-4" width="8" height="8" fill="#e01616"/><rect x="36" y="-4" width="8" height="8" fill="#a80000"/><rect x="-44" y="6" width="8" height="8" fill="#a80000"/><rect x="-34" y="6" width="8" height="8" fill="#a80000"/><rect x="-24" y="6" width="8" height="8" fill="#e01616"/><rect x="-14" y="6" width="8" height="8" fill="#ff4a4a"/><rect x="-4" y="6" width="8" height="8" fill="#ff4a4a"/><rect x="6" y="6" width="8" height="8" fill="#ff4a4a"/><rect x="16" y="6" width="8" height="8" fill="#e01616"/><rect x="26" y="6" width="8" height="8" fill="#a80000"/><rect x="36" y="6" width="8" height="8" fill="#a80000"/><rect x="-34" y="16" width="8" height="8" fill="#a80000"/><rect x="-24" y="16" width="8" height="8" fill="#e01616"/><rect x="-14" y="16" width="8" height="8" fill="#e01616"/><rect x="-4" y="16" width="8" height="8" fill="#e01616"/><rect x="6" y="16" width="8" height="8" fill="#e01616"/><rect x="16" y="16" width="8" height="8" fill="#e01616"/><rect x="26" y="16" width="8" height="8" fill="#a80000"/><rect x="-34" y="26" width="8" height="8" fill="#a80000"/><rect x="-24" y="26" width="8" height="8" fill="#a80000"/><rect x="-14" y="26" width="8" height="8" fill="#a80000"/><rect x="-4" y="26" width="8" height="8" fill="#e01616"/><rect x="6" y="26" width="8" height="8" fill="#a80000"/><rect x="16" y="26" width="8" height="8" fill="#a80000"/><rect x="26" y="26" width="8" height="8" fill="#a80000"/><rect x="-14" y="36" width="8" height="8" fill="#a80000"/><rect x="-4" y="36" width="8" height="8" fill="#a80000"/><rect x="6" y="36" width="8" height="8" fill="#a80000"/></svg></div><svg class="x" viewBox="-50 -50 100 100" shape-rendering="crispEdges"><rect x="-24" y="-24" width="8" height="8" fill="#000"/><rect x="-24" y="16" width="8" height="8" fill="#000"/><rect x="-14" y="-14" width="8" height="8" fill="#000"/><rect x="-14" y="6" width="8" height="8" fill="#000"/><rect x="-4" y="-4" width="8" height="8" fill="#000"/><rect x="6" y="-14" width="8" height="8" fill="#000"/><rect x="6" y="6" width="8" height="8" fill="#000"/><rect x="16" y="-24" width="8" height="8" fill="#000"/><rect x="16" y="16" width="8" height="8" fill="#000"/></svg></div>
+    <div class="eye r" id="eyeR"><div class="orb"><svg viewBox="-50 -50 100 100" shape-rendering="crispEdges"><rect x="-14" y="-44" width="8" height="8" fill="#a80000"/><rect x="-4" y="-44" width="8" height="8" fill="#a80000"/><rect x="6" y="-44" width="8" height="8" fill="#a80000"/><rect x="-34" y="-34" width="8" height="8" fill="#a80000"/><rect x="-24" y="-34" width="8" height="8" fill="#a80000"/><rect x="-14" y="-34" width="8" height="8" fill="#a80000"/><rect x="-4" y="-34" width="8" height="8" fill="#e01616"/><rect x="6" y="-34" width="8" height="8" fill="#a80000"/><rect x="16" y="-34" width="8" height="8" fill="#a80000"/><rect x="26" y="-34" width="8" height="8" fill="#a80000"/><rect x="-34" y="-24" width="8" height="8" fill="#a80000"/><rect x="-24" y="-24" width="8" height="8" fill="#e01616"/><rect x="-14" y="-24" width="8" height="8" fill="#e01616"/><rect x="-4" y="-24" width="8" height="8" fill="#e01616"/><rect x="6" y="-24" width="8" height="8" fill="#e01616"/><rect x="16" y="-24" width="8" height="8" fill="#e01616"/><rect x="26" y="-24" width="8" height="8" fill="#a80000"/><rect x="-44" y="-14" width="8" height="8" fill="#a80000"/><rect x="-34" y="-14" width="8" height="8" fill="#a80000"/><rect x="-24" y="-14" width="8" height="8" fill="#e01616"/><rect x="-14" y="-14" width="8" height="8" fill="#ff4a4a"/><rect x="-4" y="-14" width="8" height="8" fill="#ff4a4a"/><rect x="6" y="-14" width="8" height="8" fill="#ff4a4a"/><rect x="16" y="-14" width="8" height="8" fill="#e01616"/><rect x="26" y="-14" width="8" height="8" fill="#a80000"/><rect x="36" y="-14" width="8" height="8" fill="#a80000"/><rect x="-44" y="-4" width="8" height="8" fill="#a80000"/><rect x="-34" y="-4" width="8" height="8" fill="#e01616"/><rect x="-24" y="-4" width="8" height="8" fill="#e01616"/><rect x="-14" y="-4" width="8" height="8" fill="#ff4a4a"/><rect x="-4" y="-4" width="8" height="8" fill="#ff4a4a"/><rect x="6" y="-4" width="8" height="8" fill="#ff4a4a"/><rect x="16" y="-4" width="8" height="8" fill="#e01616"/><rect x="26" y="-4" width="8" height="8" fill="#e01616"/><rect x="36" y="-4" width="8" height="8" fill="#a80000"/><rect x="-44" y="6" width="8" height="8" fill="#a80000"/><rect x="-34" y="6" width="8" height="8" fill="#a80000"/><rect x="-24" y="6" width="8" height="8" fill="#e01616"/><rect x="-14" y="6" width="8" height="8" fill="#ff4a4a"/><rect x="-4" y="6" width="8" height="8" fill="#ff4a4a"/><rect x="6" y="6" width="8" height="8" fill="#ff4a4a"/><rect x="16" y="6" width="8" height="8" fill="#e01616"/><rect x="26" y="6" width="8" height="8" fill="#a80000"/><rect x="36" y="6" width="8" height="8" fill="#a80000"/><rect x="-34" y="16" width="8" height="8" fill="#a80000"/><rect x="-24" y="16" width="8" height="8" fill="#e01616"/><rect x="-14" y="16" width="8" height="8" fill="#e01616"/><rect x="-4" y="16" width="8" height="8" fill="#e01616"/><rect x="6" y="16" width="8" height="8" fill="#e01616"/><rect x="16" y="16" width="8" height="8" fill="#e01616"/><rect x="26" y="16" width="8" height="8" fill="#a80000"/><rect x="-34" y="26" width="8" height="8" fill="#a80000"/><rect x="-24" y="26" width="8" height="8" fill="#a80000"/><rect x="-14" y="26" width="8" height="8" fill="#a80000"/><rect x="-4" y="26" width="8" height="8" fill="#e01616"/><rect x="6" y="26" width="8" height="8" fill="#a80000"/><rect x="16" y="26" width="8" height="8" fill="#a80000"/><rect x="26" y="26" width="8" height="8" fill="#a80000"/><rect x="-14" y="36" width="8" height="8" fill="#a80000"/><rect x="-4" y="36" width="8" height="8" fill="#a80000"/><rect x="6" y="36" width="8" height="8" fill="#a80000"/></svg></div><svg class="x" viewBox="-50 -50 100 100" shape-rendering="crispEdges"><rect x="-24" y="-24" width="8" height="8" fill="#000"/><rect x="-24" y="16" width="8" height="8" fill="#000"/><rect x="-14" y="-14" width="8" height="8" fill="#000"/><rect x="-14" y="6" width="8" height="8" fill="#000"/><rect x="-4" y="-4" width="8" height="8" fill="#000"/><rect x="6" y="-14" width="8" height="8" fill="#000"/><rect x="6" y="6" width="8" height="8" fill="#000"/><rect x="16" y="-24" width="8" height="8" fill="#000"/><rect x="16" y="16" width="8" height="8" fill="#000"/></svg></div>
+  </div>
+</div>
+<!-- X shell desktop -->
+<div id="os" data-wall="eyes" aria-label="X desktop">
+  <div class="wall"></div>
+  <div class="osday" id="osDay"><div class="d1" id="osD1"></div><div class="d2" id="osD2"></div><div class="d3">Beta V1 &middot; test, not the full version</div></div>
+  <div class="osw" id="osW"></div>
+  <div class="dicons" id="osIcons"></div>
+  <div id="osWins"></div>
+  <aside class="start" id="osStart" aria-hidden="true">
+    <div class="st-head"><div class="brand">X</div><div class="st-beta"><i>Beta V1</i>Test Not Full Version</div></div>
+    <label class="st-search"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="6.8" cy="6.8" r="4.6"/><path d="M10.4 10.4L14 14"/></svg><input id="stQ" placeholder="Search apps" autocomplete="off" spellcheck="false"></label>
+    <div class="st-body">
+      <div class="st-h">Apps</div>
+      <div class="st-grid" id="stGrid"></div>
+      <div class="st-h">Jump to</div>
+      <div id="stRec"></div>
+    </div>
+    <div class="st-foot">
+      <button class="st-user" type="button" id="stUser"><span class="st-av"><span id="stAv">X</span></span><span class="pn" id="stName">User</span></button>
+      <button class="st-pwr" type="button" id="stPwr" title="Sign out"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M10 2v7M5.6 4.6a7 7 0 108.8 0"/></svg></button>
+    </div>
+  </aside>
+  <nav class="rail" id="osTaskbar">
+    <div class="rail-mid" id="tbCenter"></div>
+    <div class="rail-end">
+      <span class="beta-v">Beta V1 Test Not Full Version</span>
+      <div class="rail-clock" id="tbClock"><span class="clk" id="clkT"></span><span class="clk" id="clkD"></span></div>
+    </div>
+  </nav>
+</div>
+
+<script>
+  // floating embers on the home screen
+  (function () {
+    var box = document.getElementById("embers");
+    if (!box) return;
+    for (var i = 0; i < 34; i++) {
+      var e = document.createElement("i");
+      e.className = "ember";
+      var sz = 1.5 + Math.random() * 2.5;
+      e.style.cssText = "left:" + (Math.random() * 100).toFixed(1) + "%;width:" + sz.toFixed(1) + "px;height:" + sz.toFixed(1) +
+        "px;animation-duration:" + (9 + Math.random() * 11).toFixed(1) + "s;animation-delay:-" + (Math.random() * 20).toFixed(1) +
+        "s;--dx:" + ((Math.random() - .5) * 120).toFixed(0) + "px";
+      box.appendChild(e);
+    }
+  })();
+</script>
+<script src="js/loader.js"></script>
+
+<script src="js/os-and-browser.js"></script>
+<script>
+// layout v2 extras: dock tooltips, fps pill, welcome toast
+(function () {
+  var os = document.getElementById("os"); if (!os) return;
+  var fps = document.createElement("div"); fps.id = "osFps"; fps.textContent = "-- FPS"; os.appendChild(fps);
+  var n = 0, t0 = performance.now(), told = false;
+  function loop(t) {
+    n++; if (t - t0 >= 1000) { fps.textContent = Math.round(n * 1000 / (t - t0)) + " FPS"; n = 0; t0 = t; }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  function tips() { os.querySelectorAll(".tb-btn").forEach(function (b) { if (!b.dataset.tip) b.dataset.tip = b.title || b.getAttribute("aria-label") || ""; if (b.title) b.removeAttribute("title"); }); }
+  function toast() {
+    if (told) return; told = true;
+    var nm = ((document.getElementById("stName") || {}).textContent || "").trim();
+    var el = document.createElement("div"); el.id = "osToast";
+    el.innerHTML = "<small>System</small><b>Welcome back" + (nm && nm !== "User" ? ", " + nm.replace(/[<>&]/g, "") : "") + "</b><span>Tap the first dock icon to open your apps.</span>";
+    os.appendChild(el); setTimeout(function () { el.remove(); }, 6800);
+  }
+  new MutationObserver(function () { tips(); if (os.classList.contains("show")) setTimeout(toast, 1600); }).observe(os, { attributes: true, attributeFilter: ["class"], subtree: true, childList: true });
+})();
+</script>
+</body>
+</html>

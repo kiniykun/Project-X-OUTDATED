@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>Proxy frame</title>
+		<meta name="robots" content="noindex" />
+		<style>
+			html, body { margin: 0; height: 100%; background: #0b0b0b; color: #ddd; font: 15px system-ui, sans-serif; }
+			#frame { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; background: #fff; }
+			#msg { position: fixed; inset: 0; display: grid; place-items: center; text-align: center; padding: 1.5rem; }
+			#msg[hidden] { display: none; }
+		</style>
+	</head>
+	<body>
+		<div id="msg">Starting proxy&hellip;</div>
+		<iframe id="frame" title="Page"></iframe>
+		<script type="module" src="/src/go.ts"></script>
+	</body>
+</html>
